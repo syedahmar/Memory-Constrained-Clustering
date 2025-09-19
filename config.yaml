@@ -1,0 +1,126 @@
+# =========================================
+# MASTER CONFIG — SMALL / MEDIUM / LARGE
+# =========================================
+# How to use:
+# - SMALL  (≤20k):   use_streaming: false ; final_mode: "fullD"
+# - MEDIUM (30–80k): use_streaming: true  ; final_mode: "coreset" ; max_coreset: 20000 ; cand_per_local: 40
+# - LARGE  (≥90k):   use_streaming: true  ; final_mode: "coreset" ; max_coreset: 30000 ; cand_per_local: 50
+# Only tweak the few lines noted above per run; keep everything else fixed for fair comparisons.
+# =========================================
+
+csv_path: "datasets/synthetic_asthma_20k.csv"   # change per run
+#csv_path: "synthetic_asthma_100k_easy.csv"   # change per run
+k_fixed: 10
+
+# -------------------------
+# Time budget & guards
+# -------------------------
+time_budget_secs: 3600        # 0 = disable
+min_secs_before_final: 900    # need ≥15 min left before starting final
+
+# -------------------------
+# Streaming controls
+# -------------------------
+use_streaming: true          # small: false | medium: true | large: true
+chunk_size: 2000              # cap; auto_chunk may reduce it
+auto_chunk: false            # set true to auto-size chunks for RAM target
+ram_target_gb: 6.0            # used only if auto_chunk: true
+ram_headroom_gb: 1.0
+
+# -------------------------
+# Candidate pools & matching
+# -------------------------
+use_candidate_pools: true
+cand_per_local: 50            # small: 30–40 | medium: 40 | large: 50
+use_hungarian: true
+summary_weight: 0.5           # 0.0=medoid-only, 1.0=summary-only (we blend)
+
+# -------------------------
+# Final mode
+# -------------------------
+final_mode: "coreset"           # small: "fullD" | medium: "coreset" | large: "coreset"
+max_coreset: 10000            # medium: 20k | large: 30k (try 50k in ablations)
+
+# -------------------------
+# Weights
+# -------------------------
+use_weights: true
+weight_learning_mode: "none"  # "none" | "supervised" | "stability"
+weight_learning_sample: 8000
+weight_learning_min_weight: 0.2
+group_weights: { numeric: 1.0, binary: 1.0, categorical: 1.0 }
+per_feature_weights:
+  age: 1.0
+  bmi: 1.0
+  smoking: 1.0
+  eosinophilia: 1.0
+  neutrophilia: 1.0
+  allergy: 1.0
+  severity: 1.0
+  drug_obesity: 1.0
+  drug_hypertension: 1.0
+  drug_dyslipidemia: 1.0
+  drug_diabetes: 1.0
+  ethnicity: 3.0
+
+# -------------------------
+# Hard-point reservoir
+# -------------------------
+enable_hard_reservoir: false
+reservoir_mode: "quantile"    # "quantile" or "topk"
+reservoir_quantile: 0.85      # try 0.90–0.95 on large runs
+reservoir_topk: 10
+
+# -------------------------
+# Progress & memmap options
+# -------------------------
+show_progress: true           # tqdm progress bars during distance builds
+fullD_use_memmap: false       # true: write D_full to disk (RAM saver; slower I/O)
+core_use_memmap: false        # coreset DM is smaller; typically no need
+
+# Optional: capped final fullD solver (if you insist on fullD at medium N)
+use_sklearn_extra_final: true
+final_max_iter: 30
+
+# -------------------------
+# Silhouette & logging
+# -------------------------
+sil_sample: 3000
+verbose: true
+heartbeat_secs: 15
+runs_dir: "runs"
+
+# -------------------------
+# Columns (schema)
+# -------------------------
+binary_cols: [smoking, eosinophilia, neutrophilia, allergy, severity, drug_obesity, drug_hypertension, drug_dyslipidemia, drug_diabetes]
+num_cols: [age, bmi]
+cat_cols: [ethnicity]
+
+# =====================================================================
+# EXPERIMENT TRACKER (copy to Sheets or edit in-place as comments)
+# Fill ARI, NMI, Silhouette, Runtime (mins), Peak Memory (GB), Notes.
+# =====================================================================
+# | Dataset Size | Preset  | ARI   | NMI   | Silhouette | Runtime (mins) | Peak Memory (GB) | Notes |
+# |--------------|---------|-------|-------|------------|----------------|------------------|-------|
+# | 10k          | small   |       |       |            |                |                  |       |
+# | 20k          | small   |       |       |            |                |                  |       |
+# | 30k          | medium  |       |       |            |                |                  |       |
+# | 40k          | medium  |       |       |            |                |                  |       |
+# | 50k          | medium  |       |       |            |                |                  |       |
+# | 60k          | medium  |       |       |            |                |                  |       |
+# | 70k          | medium  |       |       |            |                |                  |       |
+# | 80k          | medium  |       |       |            |                |                  |       |
+# | 90k          | large   |       |       |            |                |                  |       |
+# | 100k         | large   |       |       |            |                |                  |       |
+# | 150k         | large   |       |       |            |                |                  |       |
+# | 200k         | large   |       |       |            |                |                  |       |
+# ---------------------------------------------------------------------
+# OPTIONAL ABLATIONS @100k (add rows above or in a separate sheet):
+# - Coreset size: max_coreset ∈ {10k, 20k, 30k, 50k}
+# - Candidate pool: cand_per_local ∈ {20, 40, 60}
+# - Reservoir: enable_hard_reservoir: {false, true}, reservoir_quantile ∈ {0.85,0.90,0.95}
+# - Matching: use_hungarian: {false,true}; summary_weight ∈ {0.0,0.25,0.5,0.75}
+# - Chunking: auto_chunk: {false,true}; if true, ram_target_gb ∈ {2.0,4.0,8.0}
+# - Weights: use_weights: {false,true}; weight_learning_mode: {"none","stability"}; weight_learning_sample ∈ {8k,12k,20k}
+# =====================================================================
