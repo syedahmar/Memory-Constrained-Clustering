@@ -1,45 +1,27 @@
-Streaming k-Medoids for Mixed-Type Healthcare Data
+# Streaming k-Medoids for Mixed-Type Healthcare Data
 
 This repository contains the code, configuration files, and scripts used in the paper:
 
-Streaming + Coreset k-Medoids for Large-Scale Mixed-Type Healthcare Data
-(Submitted to NeurIPS 2025 MusIML Workshop)
+**Streaming + Coreset k-Medoids for Large-Scale Mixed-Type Healthcare Data**  
+*(Submitted to NeurIPS 2025 MusIML Workshop)*
 
-🔧 Features
+---
 
-Streaming + coreset k-medoids algorithm with weighted Gower distance.
+## 🔧 Features
+- Streaming + coreset k-medoids algorithm with weighted Gower distance  
+- Supports numeric, binary, and categorical features  
+- Chunk-wise streaming with Hungarian alignment of medoids  
+- Coreset refinement for scalability under strict memory limits  
+- Feature weighting modes: uniform, manual (e.g., ethnicity emphasis), supervised (benchmark only)  
+- Built-in metrics: ARI, NMI, Silhouette, Purity, and cluster-specific Precision/Recall  
+- Logging of runtime, peak memory, and learned feature weights  
 
-Supports numeric, binary, and categorical features.
+---
+## ▶️ Usage Example
 
-Chunk-wise streaming with Hungarian alignment of medoids.
-
-Coreset refinement for scalability under strict memory limits.
-
-Feature weighting modes: uniform, manual (e.g., ethnicity emphasis), supervised (benchmark only).
-
-Built-in metrics: ARI, NMI, silhouette, purity, and cluster-specific precision/recall.
-
-Logging of runtime, peak memory, and learned feature weights.
-
-.
-├── stream_kmedoids_pipeline.py   # Main algorithm
-├── synthetic_data_generator.py   # Synthetic asthma dataset generator
-├── configs/                      # Example YAML configs
-│   ├── config_uniform.yml
-│   ├── config_ethnicity.yml
-│   └── config_supervised.yml
-├── evaluation/                   # Metrics + plotting utilities
-│   ├── compute_metrics.py
-│   └── plot_results.py
-├── runs/                         # Experiment outputs (created at runtime)
-└── requirements.txt              # Dependencies
-
-▶️ Usage Example
-
-To run the pipeline:
+Run the pipeline:
 
 python stream_kmedoids_pipeline.py --config configs/config_uniform.yml
-
 
 To generate synthetic data (10k–200k patients):
 
