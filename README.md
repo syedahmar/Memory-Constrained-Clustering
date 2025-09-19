@@ -23,9 +23,9 @@ Run the pipeline:
 
 python stream_kmedoids_pipeline.py --config configs/config_uniform.yml
 
-To generate synthetic data (10k–200k patients):
+To generate synthetic data (200k patients, modify proportions and numbers inside code if needed):
 
-python synthetic_data_generator.py --size 200000 --output synthetic_asthma_200k.csv
+python generate_dataset.py
 
 📊 Reproducing Figures
 
