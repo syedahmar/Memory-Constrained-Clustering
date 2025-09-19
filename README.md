@@ -1,3 +1,6 @@
+# Note: 
+This repository currently contains core files. A full release with complete code, configs, and documentation will follow with the paper’s preprint/publication.
+
 # Streaming k-Medoids for Mixed-Type Healthcare Data
 
 This repository contains the code, configuration files, and scripts used in the paper:
